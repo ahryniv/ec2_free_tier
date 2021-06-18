@@ -6,7 +6,7 @@ resource "aws_vpc" "vpc" {
   tags        = local.tags
 }
 
-resource "aws_subnet" "subnet" {
+resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = "10.0.0.0/24"
   availability_zone       = local.availability_zones[0]
@@ -17,6 +17,29 @@ resource "aws_subnet" "subnet" {
   })
 }
 
+
+resource "aws_internet_gateway" "internet_gateway" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = local.tags
+}
+
+resource "aws_route_table" "route_table" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.internet_gateway.id
+  }
+
+  tags = local.tags
+}
+
+resource "aws_route_table_association" route_table_association {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = concat(aws_route_table.route_table.*.id, [""])[0]
+}
+
 resource "aws_security_group" "ec2_sg" {
   name        = "${var.project_slug}-ec2-sg"
   description = "Security group for the EC2 instance"
@@ -25,8 +48,15 @@ resource "aws_security_group" "ec2_sg" {
   tags        = local.tags
 
   ingress {
-    from_port         = "22"
-    to_port           = "22"
+    from_port         = 22
+    to_port           = 22
+    protocol          = "tcp"
+    cidr_blocks       = ["0.0.0.0/0"]
+    ipv6_cidr_blocks  = ["::/0"]
+  }
+  ingress {
+    from_port         = 80
+    to_port           = 80
     protocol          = "tcp"
     cidr_blocks       = ["0.0.0.0/0"]
     ipv6_cidr_blocks  = ["::/0"]
