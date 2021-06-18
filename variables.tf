@@ -1,5 +1,6 @@
 variable "region" {
-  description = "us-east-1"
+  description = "AWS region"
+  default = "us-east-1"
 }
 
 variable "environment" {
@@ -16,5 +17,5 @@ variable "ec2_ami" {
 }
 
 variable "ssh_public_key" {
-  description = "Public part of your ssh key"
+  description = "Public part of your ssh key to connect EC2 instance"
 }
