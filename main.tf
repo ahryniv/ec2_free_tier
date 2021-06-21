@@ -25,9 +25,15 @@ data "aws_iam_policy_document" "instance-assume-role-policy" {
   }
 }
 
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2_profile"
+  role = aws_iam_role.ec2_role.name
+}
+
 resource "aws_iam_role" "ec2_role" {
   name = "${var.project_slug}-EC2-role"
   assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
+  tags = local.tags
 }
 
 resource "aws_instance" "instance" {
@@ -37,7 +43,7 @@ resource "aws_instance" "instance" {
   key_name                    = aws_key_pair.key.key_name
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
-  iam_instance_profile        = aws_iam_role.ec2_role.name
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
 
   tags                        = local.tags
 }
