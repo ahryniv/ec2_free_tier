@@ -19,3 +19,8 @@ variable "ec2_ami" {
 variable "ssh_public_key" {
   description = "Public part of your ssh key to connect EC2 instance"
 }
+
+variable "vpc_cidr" {
+  description = "VPC CIDR"
+  default = "10.0.0.0/16"
+}
