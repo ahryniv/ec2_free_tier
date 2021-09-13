@@ -17,6 +17,16 @@ resource "aws_subnet" "public_subnet" {
   })
 }
 
+resource "aws_subnet" "public_subnet" {
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = "10.0.0.1/24"
+  availability_zone       = local.availability_zones[1]
+  map_public_ip_on_launch = true
+
+  tags                    = merge(local.tags, {
+    Name = "${var.project_slug}-public2"
+  })
+}
 
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
