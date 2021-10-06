@@ -50,6 +50,11 @@ resource "aws_route_table_association" route_table_association {
   route_table_id = concat(aws_route_table.route_table.*.id, [""])[0]
 }
 
+resource "aws_route_table_association" route_table_association2 {
+  subnet_id      = aws_subnet.public_subnet2.id
+  route_table_id = concat(aws_route_table.route_table.*.id, [""])[0]
+}
+
 resource "aws_security_group" "ec2_sg" {
   name        = "${var.project_slug}-ec2-sg"
   description = "Security group for the EC2 instance"
